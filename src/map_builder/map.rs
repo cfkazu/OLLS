@@ -94,7 +94,9 @@ impl Map{
     }
     pub fn can_enter_tile<T:Into<Position>>(&self,position: T)->bool{
         let position = position.into();
-        self.in_bounds(position) && self.tiles[self.map_idx(position.x, position.y)] == TileType::Glass1
+        self.in_bounds(position) 
+        && self.tiles[self.map_idx(position.x, position.y)] == TileType::Glass1 
+        && self.occupation[self.map_idx(position.x, position.y)] == None
     }
 
     pub fn entity_occupy_tile(&mut self,entity:Entity,position:Position){

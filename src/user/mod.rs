@@ -50,6 +50,7 @@ pub fn player_input(
         }
     
     if map.can_enter_tile(new_position){
+        map.move_entity_occupation(player_entity, pos.clone(), new_position);
         pos.x = new_position.x;
         pos.y = new_position.y;
         transform.translation.x = (pos.x as f32 - (SIDE_LENGTH -1) as f32 /2.)*TILE_SIZE;
