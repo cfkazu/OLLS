@@ -39,6 +39,8 @@ pub struct Map{
     pub height:i32,
     pub tiles:Vec<TileType>,
     pub occupation: Vec<Option<Entity>>,
+    pub player_start:Position,
+    pub mob_starts:Vec<(Position,Mob)>,
 }
 impl Map{
     pub fn new(width:i32,height:i32) -> Self{
@@ -47,6 +49,8 @@ impl Map{
             height,
             tiles:vec![TileType::Glass1;(width*height) as usize],
             occupation:vec![None;(width*height) as usize],
+            player_start:Position::new(1,2),
+            mob_starts:Vec::new(),
         }
     }
 
@@ -81,6 +85,11 @@ impl Map{
             height:5,
             tiles:my_tile,
             occupation:vec![None;25],
+            player_start:Position::new(2,1),
+            mob_starts:vec![(Position::new(2,3),Mob{mob_type:MobType::Neutral,index:5}),
+                            (Position::new(3,3),Mob{mob_type:MobType::Neutral,index:6}),
+                            (Position::new(2,2),Mob{mob_type:MobType::Neutral,index:7}),
+                            (Position::new(3,2),Mob{mob_type:MobType::Neutral,index:8})],
         }
     }
     pub fn can_enter_tile<T:Into<Position>>(&self,position: T)->bool{
@@ -91,6 +100,11 @@ impl Map{
     pub fn entity_occupy_tile(&mut self,entity:Entity,position:Position){
         if let Some(idx) = self.try_idx(position){
             self.occupation[idx] = Some(entity);
+        }
+    }
+    pub fn entities_occupy_tiles(&mut self,entities:Vec<Entity>,positions:Vec<Position>){
+        for (entity,position) in entities.iter().zip(positions.iter()){
+            self.entity_occupy_tile(*entity,*position);
         }
     }
     pub fn move_entity_occupation(&mut self, entity: Entity, old_p: Position, new_p: Position) {

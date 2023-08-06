@@ -5,7 +5,7 @@ pub struct MainCamera;
 #[derive(Component)]
 pub struct Player;
 
-#[derive(Component)]
+#[derive(Component,Clone, Copy)]
 pub struct Mob{
    pub mob_type: MobType,
    pub index: usize

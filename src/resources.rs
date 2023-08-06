@@ -4,7 +4,10 @@ use crate::prelude::*;
 pub struct MapAsset{
     pub atlas:Handle<TextureAtlas>,
 }
-
+#[derive(Resource)]
+pub struct MobAsset{
+    pub atlas:Handle<TextureAtlas>,
+}
 #[derive(Resource)]
 pub struct CharacterAsset{
     pub atlas:Handle<TextureAtlas>,

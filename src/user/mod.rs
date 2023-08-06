@@ -9,7 +9,7 @@ pub fn spawn_player(
     atlas: Res<CharacterAsset>,
     mut map: ResMut<Map>,
 ){
-    let player_start = Position::new(2,2);
+    let player_start = map.player_start;
     let mut sprite = TextureAtlasSprite::new(0);
     sprite.custom_size = Some(Vec2::new(TILE_SIZE, TILE_SIZE));
     let entity = commands

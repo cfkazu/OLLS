@@ -36,6 +36,11 @@ fn setup(mut commands: Commands,asset_server:Res<AssetServer>,mut texture_atlase
     let texture_atlas = TextureAtlas::from_grid(texture_handle, Vec2::new(48.0, 48.0), 1, 1,None,None);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
     commands.insert_resource(CharacterAsset { atlas: texture_atlas_handle.clone() });
+
+    let texture_handle:Handle<Image> = asset_server.load("character.png");
+    let texture_atlas = TextureAtlas::from_grid(texture_handle, Vec2::new(48.0, 48.0), 33, 25,None,None);
+    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+    commands.insert_resource(MobAsset { atlas: texture_atlas_handle.clone() });
     
 
     let mut cam = Camera2dBundle::default();
@@ -72,6 +77,7 @@ fn main() {
         //.add_systems(PostStartup, test)
         .add_systems(PostStartup,spawn_map_tiles)
         .add_systems(PostStartup,spawn_player)
+        .add_systems(PostStartup,spawn_mobs)
         .add_plugins(PlayerInputPlugin)
         //.add_systems(Update, movement::movement)
         //.add_plugins(UIPlugin)
