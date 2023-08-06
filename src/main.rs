@@ -6,9 +6,10 @@ mod tile;
 mod map_builder;
 mod states;
 mod user;
-mod mobs;
+
 mod system;
 mod render_utils;
+
 mod prelude{
     pub const SCREEN_WIDTH: i32 = 80;
     pub const SCREEN_HEIGHT: i32 = 80;
@@ -22,9 +23,10 @@ mod prelude{
     pub use crate::map_builder::*;
     pub use crate::states::*;
     pub use crate::user::*;
-    pub use crate::mobs::*;
+
     pub use crate::system::*;
     pub use crate::render_utils::*;
+
 }
 const WINDOW_SIZE: f32 = 500.0;
 fn setup(mut commands: Commands,asset_server:Res<AssetServer>,mut texture_atlases:ResMut<Assets<TextureAtlas>>) {
@@ -81,6 +83,8 @@ fn main() {
         .add_systems(PostStartup,spawn_player)
         .add_systems(PostStartup,spawn_mobs)
         .add_plugins(PlayerInputPlugin)
+        .add_plugins(MobPlugin)
+        .add_plugins(AwaitingInputPlugin)
         //.add_systems(Update, movement::movement)
         //.add_plugins(UIPlugin)
         .add_systems(PostUpdate, (position_translation))

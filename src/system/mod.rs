@@ -1,6 +1,9 @@
-use crate::prelude::*;
+use crate::{prelude::*};
 mod camera;
 mod movement;
+mod end_turn;
+mod mobs;
+pub use mobs::*;
 pub struct UserPlugin;
 
 
@@ -36,6 +39,7 @@ pub fn player_input(
     mut keyboard_input: ResMut<Input<KeyCode>>,
     mut player_postion:Query<(Entity,&mut Position,&mut Transform),With<Player>>,
     mut map: ResMut<Map>,
+    mut next_state: ResMut<NextState<TurnState>>,
 ){
     let(player_entity,mut pos,mut transform) = player_postion.single_mut();
     let mut action = true;
@@ -64,12 +68,22 @@ pub fn player_input(
 
         if new_position != *pos{
             commands.spawn(WantsToMove{entity: player_entity, destination: new_position});
+            next_state.set(TurnState::PlayerTurn);
         }
 
         keyboard_input.reset(key);
     }
 }
-
+pub struct AwaitingInputPlugin;
+impl Plugin for AwaitingInputPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(
+            Update, 
+            (player_input,movement::try_move,).run_if(
+                in_state(TurnState::AwaitingInput))
+        );
+    }
+}
 pub struct PlayerInputPlugin;
 impl Plugin for PlayerInputPlugin {
     fn build(&self, app: &mut App) {
@@ -79,14 +93,33 @@ impl Plugin for PlayerInputPlugin {
         .add_systems(
             Update,
             (
-                player_input,
-                movement::try_move,
+                //player_input,
+                //mobs::mobs_move,
+                //movement::try_move,
+                end_turn::end_turn
                 //camera::camera_move,
                 //equip_first_weapon,
                 //equip_weapon_log
             )
-            //.chain()
-                //.run_if(in_state(TurnState::AwaitingInput))
+            .chain()
+            .run_if(in_state(TurnState::PlayerTurn))
+            );
+    }
+}
+
+pub struct MobPlugin;
+impl Plugin for MobPlugin {
+    fn build(&self, app: &mut App) {
+        app
+        .add_systems(
+            Update,
+            (
+                mobs::mobs_move,
+                movement::try_move,
+                end_turn::end_turn
+            )
+            .chain()
+            .run_if(in_state(TurnState::MonsterTurn))
             );
     }
 }

@@ -89,7 +89,8 @@ impl Map{
             mob_starts:vec![(Position::new(2,3),Mob{mob_type:MobType::Neutral,index:5}),
                             (Position::new(3,3),Mob{mob_type:MobType::Neutral,index:6}),
                             (Position::new(2,2),Mob{mob_type:MobType::Neutral,index:7}),
-                            (Position::new(3,2),Mob{mob_type:MobType::Neutral,index:8})],
+                            (Position::new(3,2),Mob{mob_type:MobType::Neutral,index:8})
+                            ],
         }
     }
     pub fn can_enter_tile<T:Into<Position>>(&self,position: T)->bool{

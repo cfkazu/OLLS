@@ -6,7 +6,26 @@ pub enum MobType{
     Hostile,
     Ally
 }
-
+pub fn mobs_move(
+    mut commands: Commands
+    ,mut map: ResMut<Map>
+    ,mut mob_positions: Query<(Entity, &mut Position),With<Mob>>
+){
+    for (entity,position) in mob_positions.iter_mut(){
+        let mut rng = RandomNumberGenerator::new();
+        let mut new_position = position.clone();
+        new_position = match rng.range(0,4){
+            0 => Position{x:new_position.x,y:new_position.y+1},
+            1 => Position{x:new_position.x,y:new_position.y-1},
+            2 => Position{x:new_position.x+1,y:new_position.y},
+            3 => Position{x:new_position.x-1,y:new_position.y},
+            _ => Position{x:new_position.x,y:new_position.y},
+        };
+        if new_position != *position{
+            commands.spawn(WantsToMove{entity: entity, destination: new_position});
+        }
+    }
+}
 pub fn spawn_mobs(
     mut map: ResMut<Map>,
     mut commands: Commands,
