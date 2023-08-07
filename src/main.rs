@@ -6,6 +6,7 @@ mod tile;
 mod map_builder;
 mod states;
 mod user;
+mod spawner;
 
 mod system;
 mod render_utils;
@@ -23,7 +24,7 @@ mod prelude{
     pub use crate::map_builder::*;
     pub use crate::states::*;
     pub use crate::user::*;
-
+    pub use crate::spawner::*;
     pub use crate::system::*;
     pub use crate::render_utils::*;
 
@@ -81,7 +82,8 @@ fn main() {
         //.add_systems(PostStartup, test)
         .add_systems(PostStartup,spawn_map_tiles)
         .add_systems(PostStartup,spawn_player)
-        .add_systems(PostStartup,spawn_mobs)
+        //.add_systems(PostStartup,spawn_mobs)
+        .add_systems(PostStartup,spawn_map_templates)
         .add_plugins(PlayerInputPlugin)
         .add_plugins(MobPlugin)
         .add_plugins(AwaitingInputPlugin)

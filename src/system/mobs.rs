@@ -1,6 +1,6 @@
 use crate::prelude::*;
-
-#[derive(Clone, Debug, Default, Hash, Eq, States, PartialEq, Copy)]
+use serde::Deserialize;
+#[derive(Clone, Debug, Default, Hash, Eq, States, PartialEq, Copy,Deserialize)]
 pub enum MobType{
     #[default]Neutral,
     Hostile,

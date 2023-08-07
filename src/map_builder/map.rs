@@ -41,6 +41,8 @@ pub struct Map{
     pub occupation: Vec<Option<Entity>>,
     pub player_start:Position,
     pub mob_starts:Vec<(Position,Mob)>,
+   // pub mob_positions:Vec<Position>,
+    pub file_name:String,
 }
 impl Map{
     pub fn new(width:i32,height:i32) -> Self{
@@ -51,6 +53,8 @@ impl Map{
             occupation:vec![None;(width*height) as usize],
             player_start:Position::new(1,2),
             mob_starts:Vec::new(),
+           // mob_positions:Vec::new(),
+            file_name:String::new(),
         }
     }
 
@@ -91,6 +95,8 @@ impl Map{
                             (Position::new(2,2),Mob{mob_type:MobType::Neutral,index:7}),
                             (Position::new(3,2),Mob{mob_type:MobType::Neutral,index:8})
                             ],
+            //mob_positions:vec![Position::new(2,3),Position::new(3,3)],
+            file_name:String::from("test"),
         }
     }
     pub fn can_enter_tile<T:Into<Position>>(&self,position: T)->bool{

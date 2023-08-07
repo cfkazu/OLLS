@@ -1,12 +1,12 @@
 use bevy::render::color;
-
+use serde::Deserialize;
 use crate::prelude::*;
 pub const TILE_SIZE: f32 = 16.0;
 pub const SIDE_LENGTH: usize = 4;
 
 #[derive(Component)]
 struct Tile(u64);
-#[derive(Debug, Clone, PartialEq, Eq, Component,Copy)]
+#[derive(Debug, Clone, PartialEq, Eq, Component,Copy,Deserialize)]
 pub struct Position {
     pub x: i32,
     pub y: i32,

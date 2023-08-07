@@ -16,6 +16,13 @@ pub struct WantsToMove {
     pub entity: Entity,
     pub destination: Position
 }
+#[derive(Component, Clone)]
+pub struct Naming(pub String);
+#[derive(Component)]
+pub struct Health {
+    pub current: i32,
+    pub max: i32
+}
 #[derive(Component)]
 pub struct FieldOfView {
     pub visible_tiles: HashSet<Point>,
