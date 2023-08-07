@@ -23,6 +23,14 @@ pub struct Health {
     pub current: i32,
     pub max: i32
 }
+#[derive(Component, Clone, Copy)]
+pub struct WantsToAttack {
+    pub attacker: Entity,
+    pub victim: Entity
+}
+#[derive(Component)]
+pub struct Damage(pub i32);
+
 #[derive(Component)]
 pub struct FieldOfView {
     pub visible_tiles: HashSet<Point>,

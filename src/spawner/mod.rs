@@ -73,6 +73,12 @@ impl SpawnTemplates{
                 },
                 Position { x: position.x, y: position.y },
             ));
+        if let Some(hp) = template.hp{
+            entity.insert(Health{current:hp,max:hp});
+        }
+        if let Some(damage) = template.base_damage{
+            entity.insert(Damage(damage));
+        }
         map.entity_occupy_tile(entity.id(), *position);
     }
 }

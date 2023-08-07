@@ -3,6 +3,7 @@ mod camera;
 mod movement;
 mod end_turn;
 mod mobs;
+mod combat;
 pub use mobs::*;
 pub struct UserPlugin;
 
@@ -28,6 +29,9 @@ pub fn spawn_player(
                 ..Default::default()
             },
             Player,
+            Naming("Player".to_string()),
+            Health{max: 10, current: 10},
+            Damage(5),
             Position { x: player_start.x, y: player_start.y },
         )).id();
     map.entity_occupy_tile(entity,player_start);
@@ -39,6 +43,7 @@ pub fn player_input(
     mut keyboard_input: ResMut<Input<KeyCode>>,
     mut player_postion:Query<(Entity,&mut Position,&mut Transform),With<Player>>,
     mut map: ResMut<Map>,
+    mobs:Query<(Entity, &Position),(With<Health>,Without<Player>)>,
     mut next_state: ResMut<NextState<TurnState>>,
 ){
     let(player_entity,mut pos,mut transform) = player_postion.single_mut();
@@ -67,7 +72,21 @@ pub fn player_input(
     
 
         if new_position != *pos{
-            commands.spawn(WantsToMove{entity: player_entity, destination: new_position});
+            let mut hit_something = false;
+            mobs.iter()
+                .filter(|(_,mob_pos)|{
+                    **mob_pos == new_position
+                })
+                .for_each(|(mob_entity,_)|{
+                    hit_something = true;
+                    commands.spawn(WantsToAttack{
+                        attacker: player_entity,
+                        victim: mob_entity
+                    });
+                });
+            if !hit_something{
+                commands.spawn(WantsToMove{entity: player_entity, destination: new_position});
+            }
             next_state.set(TurnState::PlayerTurn);
         }
 
@@ -79,7 +98,9 @@ impl Plugin for AwaitingInputPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update, 
-            (player_input,movement::try_move,).run_if(
+            (player_input,
+                movement::try_move,
+            ).run_if(
                 in_state(TurnState::AwaitingInput))
         );
     }
@@ -96,6 +117,7 @@ impl Plugin for PlayerInputPlugin {
                 //player_input,
                 //mobs::mobs_move,
                 //movement::try_move,
+                combat::combat,
                 end_turn::end_turn
                 //camera::camera_move,
                 //equip_first_weapon,

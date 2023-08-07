@@ -122,6 +122,11 @@ impl Map{
         self.occupation[old_idx] = None;
         self.occupation[new_idx] = Some(entity);
     } 
+    pub fn free_occupy_tile(&mut self,position:Position){
+        if let Some(idx) = self.try_idx(position){
+            self.occupation[idx] = None;
+        }
+    }
 
 }
 pub fn spawn_map_tiles(
