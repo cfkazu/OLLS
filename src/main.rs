@@ -29,6 +29,8 @@ mod prelude{
     pub use crate::render_utils::*;
 
 }
+
+
 const WINDOW_SIZE: f32 = 500.0;
 fn setup(mut commands: Commands,asset_server:Res<AssetServer>,mut texture_atlases:ResMut<Assets<TextureAtlas>>) {
 
@@ -51,7 +53,8 @@ fn setup(mut commands: Commands,asset_server:Res<AssetServer>,mut texture_atlase
     let mut cam = Camera2dBundle::default();
     cam.transform.scale = Vec3::new(0.5, 0.5, 1.0);
     commands.spawn((MainCamera, cam));
-    let mymap = Map::testmap();
+    //let mymap = Map::testmap();
+    let mymap = Map::load("map1");
     commands.insert_resource(mymap);
 }
 

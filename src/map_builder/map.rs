@@ -1,7 +1,11 @@
 use bevy::{window::WindowTheme, transform::commands};
 
+use num_derive::FromPrimitive;    
+use num_traits::FromPrimitive;
 use crate::prelude::*;
-#[derive(Copy, Clone, PartialEq)]
+use tiled::{Loader, TileLayer, FiniteTileLayer, FiniteTileLayerData};
+#[derive(Copy, Clone, PartialEq,FromPrimitive)]
+#[repr(usize)]
 pub enum TileType {
     Glass1,
     Glass2,
@@ -32,6 +36,114 @@ pub enum TileType {
     WhiteSand4,
     WhiteSand5,
     WhiteSand6,
+    Road1,
+    HayTate,
+    HayYoko,
+    Void3,
+
+    DarkGrass1,
+    DarkGrass2,
+    DarkGrass3,
+    DarkGrass4,
+    Wasteland,
+    DraySoil1,
+    DraySoil2,
+    DraySoil3,
+    DraySoil4,
+    DraySoil5,
+    Concrete,
+    Green1,
+    Snow1,
+    Snow2,
+    Snow3,
+    Snow4,
+    Snow5,
+    Snow6,
+    Snow7,
+    Snow8,
+    SnowHayTate,
+    SnowHayYoko,
+    SnowLake,
+    Snow9,
+    Snow10,
+    SnowTree1,
+    SnowTree2,
+    SnowBlueTile,
+    SnowRock1,
+    SnowRock2,
+    SnowRock3,
+    SnowRock4,
+    SnowStair,
+
+    Heat1,
+    Heat2,
+    Heat3,
+    IronTable,
+    WoodenFloor1,
+    WoodenFloor2,
+    WoodenFloor3,
+    HayFloor1,
+    HayFloor2,
+    HayFloor3,
+    BrownConcrete,
+    Wara,
+    HibiTile,
+    BrueTile,
+    Icetile,
+    RoadTile,
+    SnowFlower1,
+    SnowFlower2,
+    SnowFlower3,
+    SnowGrass1,
+    SnowGrass2,
+    SnowGrass3,
+    SnowGrass4,
+    SnowRock5,
+    SnowRock6,
+    Snow11,
+    Snow12,
+    Snow13,
+    FlowerGarden1,
+    FlowerGarden2,
+    FlowerGarden3,
+    Void4,
+    SnowPillar,
+
+    BlownFloor,
+    SilverFloor,
+    BronzeFloor,
+    BlueFloor,
+    RockFloor1,
+    RockFloor2,
+    RockFloor3,
+    RockFloor4,
+    RockFloor5,
+    RockFloor6,
+    RockFloor7,
+    RockFloor8,
+    RockFloor9,
+    RockFloor10,
+    RockFloor11,
+    Ido,
+    Roof1,
+    WhiteFloor,
+    BronzeFloor2,
+    BronzeFloor3,
+    RockFloor12,
+    RockFloor13,
+    RockFloor14,
+    RockFloor15,
+    KasekiFloor1,
+    KasekiFloor2,
+    KasekiFloor3,
+    KasekiFloor4,
+    KasekiFloor5,
+    KasekiFloor6,
+    KasekiFloor7,
+    KasekiFloor8,
+    KasekiFloor9,
+
+
 }
 #[derive(Resource)]
 pub struct Map{
@@ -102,7 +214,8 @@ impl Map{
     pub fn can_enter_tile<T:Into<Position>>(&self,position: T)->bool{
         let position = position.into();
         self.in_bounds(position) 
-        && self.tiles[self.map_idx(position.x, position.y)] == TileType::Glass1 
+        //&& self.tiles[self.map_idx(position.x, position.y)] == TileType::Glass1 
+        && self.tiles[self.map_idx(position.x, position.y)] != TileType::Heat3
         && self.occupation[self.map_idx(position.x, position.y)] == None
     }
 
@@ -127,6 +240,41 @@ impl Map{
             self.occupation[idx] = None;
         }
     }
+    pub fn load(filename:&str)->Self{
+        let mut loader = Loader::new();
+        let map = loader.load_tmx_map(format!("assets/map/{}.tmx",filename));
+        //println!("map:{:?}",map);
+       
+
+        if let Ok(map) = map{
+            let mut my_tile:Vec<TileType> = Vec::new();
+            let layer = map.get_layer(0).unwrap().as_tile_layer().unwrap();
+            if let tiled::TileLayer::Finite(tiles) = layer{
+                for y in (0..layer.height().unwrap()).rev(){
+                    for x in (0..layer.width().unwrap()){
+                        if let Some(t) = tiles.get_tile(x as i32,y as i32) {
+                            my_tile.push(FromPrimitive::from_u32(t.id()).unwrap());
+                        }
+                    }
+                }
+            }
+
+            Self{
+                width:map.width as i32,
+                height:map.height as i32,
+                tiles:my_tile,
+                occupation:vec![None;(map.width*map.height) as usize],
+                player_start:Position::new(15,15),
+                mob_starts:Vec::new(),
+                //mob_positions:Vec::new(),
+                file_name:filename.to_string(),
+
+            }
+        }else{
+            panic!("Map not found");
+        }
+        
+    }   
 
 }
 pub fn spawn_map_tiles(

@@ -99,8 +99,11 @@ impl Plugin for AwaitingInputPlugin {
         app.add_systems(
             Update, 
             (player_input,
+                
                 movement::try_move,
-            ).run_if(
+                camera::camera_move,
+                
+            ).chain().run_if(
                 in_state(TurnState::AwaitingInput))
         );
     }
@@ -117,9 +120,10 @@ impl Plugin for PlayerInputPlugin {
                 //player_input,
                 //mobs::mobs_move,
                 //movement::try_move,
-                combat::combat,
-                end_turn::end_turn
                 //camera::camera_move,
+                combat::combat,
+                end_turn::end_turn,
+                
                 //equip_first_weapon,
                 //equip_weapon_log
             )
