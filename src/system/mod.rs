@@ -4,6 +4,7 @@ mod movement;
 mod end_turn;
 mod mobs;
 mod combat;
+mod time_lapse;
 pub use mobs::*;
 pub struct UserPlugin;
 
@@ -31,6 +32,9 @@ pub fn spawn_player(
             Player,
             Naming("Player".to_string()),
             Health{max: 10, current: 10},
+            Hunger{max: 100, current: 100},
+            Thirth{max: 100, current: 100},
+            SleepDesire{max: 100, current: 100},
             Damage(5),
             Position { x: player_start.x, y: player_start.y },
         )).id();
@@ -142,6 +146,7 @@ impl Plugin for MobPlugin {
             (
                 mobs::mobs_move,
                 movement::try_move,
+                time_lapse::time_lapse,
                 end_turn::end_turn
             )
             .chain()

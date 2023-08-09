@@ -15,6 +15,8 @@ pub struct SpawnTemplate {
     pub index: usize,
     pub base_damage: Option<i32>,
     pub position: Option<Position>,
+    pub hunger: Option<i32>,
+    pub sleep: Option<i32>,
 } 
 
 
@@ -78,6 +80,12 @@ impl SpawnTemplates{
         }
         if let Some(damage) = template.base_damage{
             entity.insert(Damage(damage));
+        }
+        if let Some(hunger) = template.hunger{
+            entity.insert(Hunger{current:hunger,max:hunger});
+        }
+        if let Some(sleep) = template.sleep{
+            entity.insert(SleepDesire{current:sleep,max:sleep});
         }
         map.entity_occupy_tile(entity.id(), *position);
     }

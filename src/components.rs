@@ -46,3 +46,20 @@ impl FieldOfView {
         }
     }
 }
+
+#[derive(Component)]
+pub struct SleepDesire{
+    pub current: i32,
+    pub max: i32
+}
+#[derive(Component)]
+pub struct Hunger{
+    pub current: i32,
+    pub max: i32
+}
+
+#[derive(Component)]
+pub struct Thirth{
+    pub current: i32,
+    pub max: i32
+}
