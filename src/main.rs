@@ -7,7 +7,7 @@ mod map_builder;
 mod states;
 mod user;
 mod spawner;
-
+mod ui;
 mod system;
 mod render_utils;
 
@@ -26,6 +26,7 @@ mod prelude{
     pub use crate::user::*;
     pub use crate::spawner::*;
     pub use crate::system::*;
+    pub use crate::ui::*;
     pub use crate::render_utils::*;
 
 }
@@ -91,7 +92,7 @@ fn main() {
         .add_plugins(MobPlugin)
         .add_plugins(AwaitingInputPlugin)
         //.add_systems(Update, movement::movement)
-        //.add_plugins(UIPlugin)
+        .add_plugins(UIPlugin)
         .add_systems(PostUpdate, (position_translation))
         .run();
 }

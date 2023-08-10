@@ -3,6 +3,7 @@ use crate::prelude::*;
 pub fn combat(
     mut commands:Commands<'_, '_>,
     mut map:ResMut<Map>,
+    mut gamelog: ResMut<GameLog>,
     attacker_messages:Query<(Entity,&WantsToAttack)>,
     player:Query<Entity,With<Player>>,
     names_query:Query<&Naming>,
@@ -31,7 +32,7 @@ pub fn combat(
             // add action to gamelog, first get name of attacker, then build message
             let attacker_char = names_query.get(*attacker).unwrap();
             let message = format!("\n{} attacks {} ({} damage).", attacker_char.0, name.0, final_damage);
-            //gamelog.add_entry(message);
+            gamelog.add_entry(message);
             /* 
             // less than 1 HP remove it
             if hp.current < 1 {
