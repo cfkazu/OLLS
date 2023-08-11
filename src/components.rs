@@ -65,7 +65,7 @@ pub struct Thirth{
     pub max: i32
 }
 
-#[derive(Component,Clone,Copy,Eq,PartialEq,PartialOrd)]
+#[derive(Component,Clone,Copy,Eq,PartialEq,PartialOrd,Debug)]
 pub struct Time{
     pub year: i32,
     pub month: i32,

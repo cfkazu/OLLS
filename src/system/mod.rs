@@ -53,6 +53,7 @@ pub fn player_take_a_turn(
     if let Ok(entity) = does_player_turn.get_single(){
         next_state.set(TurnState::AwaitingInput);
         commands.entity(entity).remove::<GetATurn>();
+        
     }
 }
 pub fn player_input(
@@ -65,6 +66,7 @@ pub fn player_input(
     current_time: Res<CurrentTime>,
     mut turn_queue:ResMut<TurnQueue>,
 ){
+   // println!("current_time: {:?}",current_time.time);
     let(player_entity,mut pos,mut transform) = player_postion.single_mut();
     let mut action = true;
     let mut wait = false;
@@ -119,8 +121,9 @@ impl Plugin for AwaitingInputPlugin {
             Update, 
             (player_input,
                 
-                movement::try_move,
-                camera::camera_move,
+                //movement::try_move,
+               // movement::try_move,
+               // camera::camera_move,
                 
             ).chain().run_if(
                 in_state(TurnState::AwaitingInput))
@@ -153,9 +156,11 @@ impl Plugin for PlayerInputPlugin {
         app.add_systems(
             Update,
             (
+                
                 player_take_a_turn,
+                
             )
-            .chain()
+            .run_if(not(in_state(TurnState::AwaitingInput)))
             );
     }
 }
@@ -168,12 +173,22 @@ impl Plugin for MobPlugin {
             Update,
             (
                 mobs::mobs_move,
-                movement::try_move,
+                
                 
                 end_turn::end_turn
             )
             .chain()
             .run_if(in_state(TurnState::MonsterTurn))
+            );
+
+            app
+            .add_systems(
+                Update,
+                (
+                    mobs::mobs_move_by_time,
+                    
+                )
+                .chain()
             );
     }
 }
@@ -186,9 +201,17 @@ impl Plugin for TimePlugin{
             Update,
             (
                 clock::time_management,
-                time_lapse::time_lapse,
+                
+                
+                //time_lapse::time_lapse,
             )
             .chain()
+            .run_if(not(in_state(TurnState::AwaitingInput)))
         );
+        app.add_systems(
+            Update,
+            (
+                movement::try_move,camera::camera_move,
+            ).chain());
     }
 }

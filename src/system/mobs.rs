@@ -4,7 +4,44 @@ use serde::Deserialize;
 pub enum MobType{
     #[default]Neutral,
     Hostile,
-    Ally
+    Ally,
+    Item
+}
+pub fn mobs_move_by_time(
+    mut commands: Commands,
+    mut map: ResMut<Map>,
+    mut mob_positions: Query<(Entity, &mut Position),(With<Mob>,With<GetATurn>)>,
+    current_time: Res<CurrentTime>,
+    mut turn_queue:ResMut<TurnQueue>,
+){
+    
+    for (entity,position) in mob_positions.iter_mut(){
+        
+        let mut rng = RandomNumberGenerator::new();
+        let mut new_position = position.clone();
+        new_position = match rng.range(0,4){
+            0 => Position{x:new_position.x,y:new_position.y+1},
+            1 => Position{x:new_position.x,y:new_position.y-1},
+            2 => Position{x:new_position.x+1,y:new_position.y},
+            3 => Position{x:new_position.x-1,y:new_position.y},
+            _ => Position{x:new_position.x,y:new_position.y},
+        };
+        if new_position != *position{
+            commands.spawn(WantsToMove{entity: entity, destination: new_position});
+        }
+
+        let mut next_time = current_time.clone();
+        next_time.time.minute += 5;
+        next_time.time.resolve_time();
+        turn_queue.queue.push(WantATurn {
+             time: next_time.time, 
+             character: entity, 
+             before_time: current_time.time.clone() });
+        
+        commands.entity(entity).remove::<GetATurn>();
+        
+    }
+
 }
 pub fn mobs_move(
     mut commands: Commands
@@ -30,6 +67,7 @@ pub fn spawn_mobs(
     mut map: ResMut<Map>,
     mut commands: Commands,
     atlas: Res<MobAsset>,
+    current_time:Res<CurrentTime>,
 ){
     let mut entities = Vec::new();
     let mut positions = Vec::new();
@@ -47,6 +85,7 @@ pub fn spawn_mobs(
                 },
                 *mob,
                 Position { x: position.x, y: position.y },
+                GetATurn{current_time:current_time.time.clone(),before_time:current_time.time.clone()},
             )).id();
         entities.push(entity);
         positions.push(*position);
