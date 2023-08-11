@@ -1,3 +1,5 @@
+use std::collections::BinaryHeap;
+
 use bevy::render::texture;
 use prelude::*;
 mod components;
@@ -55,8 +57,18 @@ fn setup(mut commands: Commands,asset_server:Res<AssetServer>,mut texture_atlase
     cam.transform.scale = Vec3::new(0.5, 0.5, 1.0);
     commands.spawn((MainCamera, cam));
     //let mymap = Map::testmap();
-    let mymap = Map::load("map1");
+    let mymap = Map::load("town1");
     commands.insert_resource(mymap);
+
+    let current_time = CurrentTime{
+        time: components::Time { year: 2023, month: 08, day: 11, hour: 16, minute: 38 }
+    };
+    commands.insert_resource(current_time);
+
+    let queue:TurnQueue = TurnQueue{
+        queue:BinaryHeap::new()
+    };
+    commands.insert_resource(queue);
 }
 
 
@@ -91,6 +103,7 @@ fn main() {
         .add_plugins(PlayerInputPlugin)
         .add_plugins(MobPlugin)
         .add_plugins(AwaitingInputPlugin)
+        .add_plugins(TimePlugin)
         //.add_systems(Update, movement::movement)
         .add_plugins(UIPlugin)
         .add_systems(PostUpdate, (position_translation))

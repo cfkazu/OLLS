@@ -5,6 +5,7 @@ mod end_turn;
 mod mobs;
 mod combat;
 mod time_lapse;
+mod clock;
 pub use mobs::*;
 pub struct UserPlugin;
 
@@ -17,6 +18,7 @@ pub fn spawn_player(
     mut commands: Commands,
     atlas: Res<CharacterAsset>,
     mut map: ResMut<Map>,
+    current_time:Res<CurrentTime>,
 ){
     let player_start = map.player_start;
     let mut sprite = TextureAtlasSprite::new(0);
@@ -37,11 +39,22 @@ pub fn spawn_player(
             SleepDesire{max: 100, current: 100},
             Damage(5),
             Position { x: player_start.x, y: player_start.y },
+            GetATurn{current_time:current_time.time.clone(),before_time:current_time.time.clone()},
         )).id();
     map.entity_occupy_tile(entity,player_start);
     
+    
 }
-
+pub fn player_take_a_turn(
+    mut commands: Commands,
+    does_player_turn:Query<Entity,(With<Player>,With<GetATurn>)>,
+    mut next_state: ResMut<NextState<TurnState>>,
+) {
+    if let Ok(entity) = does_player_turn.get_single(){
+        next_state.set(TurnState::AwaitingInput);
+        commands.entity(entity).remove::<GetATurn>();
+    }
+}
 pub fn player_input(
     mut commands: Commands,
     mut keyboard_input: ResMut<Input<KeyCode>>,
@@ -49,6 +62,8 @@ pub fn player_input(
     mut map: ResMut<Map>,
     mobs:Query<(Entity, &Position),(With<Health>,Without<Player>)>,
     mut next_state: ResMut<NextState<TurnState>>,
+    current_time: Res<CurrentTime>,
+    mut turn_queue:ResMut<TurnQueue>,
 ){
     let(player_entity,mut pos,mut transform) = player_postion.single_mut();
     let mut action = true;
@@ -65,15 +80,6 @@ pub fn player_input(
             KeyCode::Space => wait = true,
             _ => action = false,
         }
-    /* 
-    if map.can_enter_tile(new_position){
-        map.move_entity_occupation(player_entity, pos.clone(), new_position);
-        pos.x = new_position.x;
-        pos.y = new_position.y;
-        //transform.translation.x = (pos.x as f32 - (SIDE_LENGTH -1) as f32 /2.)*TILE_SIZE;
-        //transform.translation.y = (pos.y as f32 - (SIDE_LENGTH -1) as f32 /2.)*TILE_SIZE;
-    }*/
-    
 
         if new_position != *pos{
             let mut hit_something = false;
@@ -95,6 +101,15 @@ pub fn player_input(
         }
 
         keyboard_input.reset(key);
+
+        let mut next_time = current_time.clone();
+        next_time.time.minute += 5;
+        next_time.time.resolve_time();
+        turn_queue.queue.push(WantATurn {
+             time: next_time.time, 
+             character: player_entity, 
+             before_time: current_time.time.clone() })
+        
     }
 }
 pub struct AwaitingInputPlugin;
@@ -126,13 +141,21 @@ impl Plugin for PlayerInputPlugin {
                 //movement::try_move,
                 //camera::camera_move,
                 combat::combat,
-                end_turn::end_turn,
+                //end_turn::end_turn,
                 
                 //equip_first_weapon,
                 //equip_weapon_log
             )
             .chain()
             .run_if(in_state(TurnState::PlayerTurn))
+            );
+
+        app.add_systems(
+            Update,
+            (
+                player_take_a_turn,
+            )
+            .chain()
             );
     }
 }
@@ -146,11 +169,26 @@ impl Plugin for MobPlugin {
             (
                 mobs::mobs_move,
                 movement::try_move,
-                time_lapse::time_lapse,
+                
                 end_turn::end_turn
             )
             .chain()
             .run_if(in_state(TurnState::MonsterTurn))
             );
+    }
+}
+
+pub struct TimePlugin;
+impl Plugin for TimePlugin{
+    fn build(&self, app: &mut App) {
+        app
+        .add_systems(
+            Update,
+            (
+                clock::time_management,
+                time_lapse::time_lapse,
+            )
+            .chain()
+        );
     }
 }
