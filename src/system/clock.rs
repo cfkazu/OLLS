@@ -21,7 +21,7 @@ pub fn time_management(
             before_time:next.before_time,
         });
         loop{
-            println!("time:{:?}",current_time.time);
+           // println!("time:{:?}",current_time.time);
             let seek_next = turn_queue.queue.peek();
             if let Some(seek_next) = seek_next{
                 if seek_next.time == current_time.time{

@@ -72,9 +72,14 @@ pub struct Time{
     pub day: i32,
     pub hour: i32,
     pub minute: i32,
+    pub second:i32,
 }
 impl Time{
     pub fn resolve_time(&mut self){
+        if self.second >= 60{
+            self.second = 0;
+            self.minute += 1;
+        }
         if self.minute >= 60{
             self.minute = 0;
             self.hour += 1;
@@ -118,6 +123,12 @@ impl Ord for Time{
         if self.minute > other.minute{
             return Ordering::Greater;
         }else if self.minute < other.minute{
+            return Ordering::Less;
+        }
+
+        if self.second > other.second{
+            return Ordering::Greater;
+        }else if self.second < other.second{
             return Ordering::Less;
         }
         return Ordering::Equal;
