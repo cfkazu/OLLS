@@ -128,23 +128,49 @@ impl Ord for Time{
 pub struct CurrentTime{
     pub time: Time
 }
-#[derive(Component,Eq,PartialEq,PartialOrd)]
+#[derive(Component,Eq,PartialEq)]
 pub struct WantATurn{
     pub time:Time,
     pub character: Entity,
     pub before_time:Time,
 }
+impl PartialOrd for WantATurn {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        
+            if self.time > other.time{
+               // return Ordering::Greater;
+                return Some(Ordering::Less);
+                //Binary_Heap用に逆順にする
+            }else if self.time < other.time{
+                //return Ordering::Less;
+                return Some(Ordering::Greater);
+            }
+            if self.character > other.character{
+               // return Ordering::Greater;
+                return Some(Ordering::Less);
+            }else if self.character < other.character{
+                //return Ordering::Less;
+                return Some(Ordering::Greater);
+            }
+            return Some(Ordering::Equal);
+       
+    }
+}
 impl Ord for WantATurn {
     fn cmp(&self, other:&Self) -> Ordering {
         if self.time > other.time{
+           // return Ordering::Greater;
             return Ordering::Less;
             //Binary_Heap用に逆順にする
         }else if self.time < other.time{
+            //return Ordering::Less;
             return Ordering::Greater;
         }
         if self.character > other.character{
+           // return Ordering::Greater;
             return Ordering::Less;
         }else if self.character < other.character{
+            //return Ordering::Less;
             return Ordering::Greater;
         }
         return Ordering::Equal;

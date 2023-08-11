@@ -189,6 +189,7 @@ impl Plugin for MobPlugin {
                     
                 )
                 .chain()
+                .run_if(not(in_state(TurnState::AwaitingInput)))
             );
     }
 }

@@ -61,7 +61,7 @@ fn setup(mut commands: Commands,asset_server:Res<AssetServer>,mut texture_atlase
     commands.insert_resource(mymap);
 
     let current_time = CurrentTime{
-        time: components::Time { year: 2023, month: 08, day: 11, hour: 16, minute: 38 }
+        time: components::Time { year: 2023, month: 08, day: 11, hour: 0, minute: 0 }
     };
     commands.insert_resource(current_time);
 

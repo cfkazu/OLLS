@@ -21,6 +21,7 @@ pub enum TurnState {
     //InMenus,
     PlayerTurn,
     MonsterTurn,
+    MoveTime,
     //GameOver,
     //Victory,
     //NextLevel,
