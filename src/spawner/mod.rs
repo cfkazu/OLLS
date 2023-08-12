@@ -67,9 +67,43 @@ impl SpawnTemplates{
         current_time:&Res<CurrentTime>,
         mob_status_list:&Res<MobStatusList>,
     ){
+        let mob_status =mob_status_list.mob_status_list.get(&template.index);
         let mut sprite = TextureAtlasSprite::new(template.index);
         sprite.custom_size = Some(Vec2::new(TILE_SIZE, TILE_SIZE));
-        let mut entity = commands
+        let mut entity: bevy::ecs::system::EntityCommands<'_, '_, '_>;
+        if let Some(mob_status) = mob_status{
+            entity = commands
+            .spawn((
+                SpriteSheetBundle{
+                    sprite:sprite,
+                    texture_atlas: atlas,
+                    transform:(*position).to_transform(11.0),
+                    ..Default::default()
+                },
+                Naming(mob_status.name.clone()),
+                Mob{
+                    mob_type: mob_status.mob_type.clone(),
+                    index: mob_status.index,
+                },
+                Position { x: position.x, y: position.y },
+            ));
+            if let Some(hp) = mob_status.hp{
+                entity.insert(Health{current:hp,max:hp});
+            }
+            if let Some(damage) = mob_status.base_damage{
+                entity.insert(Damage(damage));
+            }
+            if let Some(hunger) = mob_status.hunger{
+                entity.insert(Hunger{current:hunger,max:hunger});
+            }
+            if let Some(sleep) = mob_status.sleep{
+                entity.insert(SleepDesire{current:sleep,max:sleep});
+            }
+            if mob_status.mob_type != MobType::Item{
+                entity.insert(GetATurn{current_time:current_time.time.clone(),before_time:current_time.time.clone()});
+            }
+        }else{
+            entity = commands
             .spawn((
                 SpriteSheetBundle{
                     sprite:sprite,
@@ -84,9 +118,25 @@ impl SpawnTemplates{
                 },
                 Position { x: position.x, y: position.y },
             ));
-        if template.mob_type != MobType::Item{
-            entity.insert(GetATurn{current_time:current_time.time.clone(),before_time:current_time.time.clone()});
+            if let Some(hp) = template.hp{
+                entity.insert(Health{current:hp,max:hp});
+            }
+            if let Some(damage) = template.base_damage{
+                entity.insert(Damage(damage));
+            }
+            if let Some(hunger) = template.hunger{
+                entity.insert(Hunger{current:hunger,max:hunger});
+            }
+            if let Some(sleep) = template.sleep{
+                entity.insert(SleepDesire{current:sleep,max:sleep});
+            }
+            if template.mob_type != MobType::Item{
+                entity.insert(GetATurn{current_time:current_time.time.clone(),before_time:current_time.time.clone()});
+            }
         }
+        
+        
+        /* 
         if let Some(hp) = template.hp{
             entity.insert(Health{current:hp,max:hp});
         }
@@ -98,7 +148,7 @@ impl SpawnTemplates{
         }
         if let Some(sleep) = template.sleep{
             entity.insert(SleepDesire{current:sleep,max:sleep});
-        }
+        }*/
         map.entity_occupy_tile(entity.id(), *position);
     }
 }
