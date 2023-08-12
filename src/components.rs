@@ -1,6 +1,11 @@
 use crate::prelude::*;
+use rustc_hash::FxHasher;
+type Hasher = BuildHasherDefault<FxHasher>;
 use std::collections::BinaryHeap;
 use std::collections::HashSet;
+use std::collections::HashMap;
+use std::hash::BuildHasherDefault;
+use serde::Deserialize;
 use std::cmp::Ordering;
 #[derive(Component)]
 pub struct MainCamera;
@@ -195,4 +200,22 @@ pub struct TurnQueue{
 pub struct GetATurn{
     pub current_time: Time,
     pub before_time: Time,
+}
+
+#[derive(Clone, Deserialize, Debug,Default)]
+pub struct MobStatus{
+    pub mob_type:MobType,
+    pub name: String,
+    pub drop_items: Option<Vec<(String, i32)>>,
+    pub description: Option<String>,
+    pub hp: Option<i32>,
+    pub index: usize,
+    pub base_damage: Option<i32>,
+    pub hunger: Option<i32>,
+    pub sleep: Option<i32>,
+}
+
+#[derive(Clone, Deserialize, Debug,Default,Resource)]
+pub struct MobStatusList{
+    pub mob_status_list: HashMap<usize,MobStatus,Hasher>,
 }

@@ -61,6 +61,7 @@ pub fn mobs_move(
         if new_position != *position{
             commands.spawn(WantsToMove{entity: entity, destination: new_position});
         }
+        
     }
 }
 pub fn spawn_mobs(

@@ -4,7 +4,8 @@ use std::collections::HashSet;
 use std::fmt::format;
 use std::fs::File;
 use ron::de::from_reader;
-#[derive(Clone, Deserialize, Debug)]
+mod mob_status;
+#[derive(Clone, Deserialize, Debug,Default)]
 pub struct SpawnTemplate {
     pub mob_type:MobType,
     pub probability: i32,
@@ -31,19 +32,24 @@ impl SpawnTemplates{
             .expect("Failed to open spawn templates file");
         from_reader(file).expect("Failed to load spawn templates")
     }
-
+    pub fn load_by_vec(entities:Vec<SpawnTemplate>)->Self{
+        Self{
+            entities
+        }
+    }
     pub fn spawn_entities(
         &self,
         commands: &mut Commands,
-        atlas:Res<MobAsset>,
+        atlas:Res<MapAsset>,
         mut map:&mut ResMut<Map>,
         current_time:Res<CurrentTime>,
+        mob_status_list:&Res<MobStatusList>,
     ){
         let mut rng = RandomNumberGenerator::new();
         for entity in self.entities.iter(){
             if rng.range(0,100) < entity.probability{
                 if let Some(position) = entity.position{
-                    self.spawn_entity(&position, &entity, commands, atlas.atlas.clone(), &mut map,&current_time);
+                    self.spawn_entity(&position, &entity, commands, atlas.atlas.clone(), &mut map,&current_time,&mob_status_list);
                 }else{
                     todo!("Spawn entity at random position");
                 }
@@ -59,6 +65,7 @@ impl SpawnTemplates{
         atlas:Handle<TextureAtlas>,
         map:&mut ResMut<Map>,
         current_time:&Res<CurrentTime>,
+        mob_status_list:&Res<MobStatusList>,
     ){
         let mut sprite = TextureAtlasSprite::new(template.index);
         sprite.custom_size = Some(Vec2::new(TILE_SIZE, TILE_SIZE));
@@ -99,9 +106,27 @@ impl SpawnTemplates{
 pub fn spawn_map_templates(
     mut commands: Commands,
     mut map: ResMut<Map>,
-    atlas: Res<MobAsset>,
+    atlas: Res<MapAsset>,
     current_time:Res<CurrentTime>,
+    mob_status_list:&Res<MobStatusList>,
 ){
     let template = SpawnTemplates::load(&map.file_name);
-    template.spawn_entities(&mut commands, atlas, &mut map,current_time);
+    template.spawn_entities(&mut commands, atlas, &mut map,current_time,mob_status_list);
 }
+
+pub struct SpawnerPlugin;
+impl Plugin for SpawnerPlugin{
+    fn build(&self, app: &mut App) {
+        app
+        .add_systems(
+            Startup,
+            (
+                mob_status::setup,
+                //time_lapse::time_lapse,
+            )
+            .chain()
+        );
+
+    }
+}
+

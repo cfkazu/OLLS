@@ -33,12 +33,12 @@ mod prelude{
 
 }
 
-
+const GRID_NUM:u32 = 826;
 const WINDOW_SIZE: f32 = 500.0;
 fn setup(mut commands: Commands,asset_server:Res<AssetServer>,mut texture_atlases:ResMut<Assets<TextureAtlas>>) {
 
     let texture_handle = asset_server.load("map1.png");
-    let texture_atlas = TextureAtlas::from_grid(texture_handle, Vec2::new(48.0, 48.0), 33, 25,None,None);
+    let texture_atlas = TextureAtlas::from_grid(texture_handle, Vec2::new(48.0, 48.0), 33, 50,None,None);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
     commands.insert_resource(MapAsset { atlas: texture_atlas_handle.clone() });
     
@@ -57,7 +57,7 @@ fn setup(mut commands: Commands,asset_server:Res<AssetServer>,mut texture_atlase
     cam.transform.scale = Vec3::new(0.5, 0.5, 1.0);
     commands.spawn((MainCamera, cam));
     //let mymap = Map::testmap();
-    let mymap = Map::load("town1");
+    let mymap = Map::load("town2");
     commands.insert_resource(mymap);
 
     let current_time = CurrentTime{
@@ -99,11 +99,13 @@ fn main() {
         .add_systems(PostStartup,spawn_map_tiles)
         .add_systems(PostStartup,spawn_player)
         //.add_systems(PostStartup,spawn_mobs)
-        .add_systems(PostStartup,spawn_map_templates)
+        //.add_systems(PostStartup,spawn_map_templates)
+        .add_systems(PostStartup,spawn_map_mob_items)
         .add_plugins(PlayerInputPlugin)
         .add_plugins(MobPlugin)
         .add_plugins(AwaitingInputPlugin)
         .add_plugins(TimePlugin)
+        .add_plugins(SpawnerPlugin)
         //.add_systems(Update, movement::movement)
         .add_plugins(UIPlugin)
         .add_systems(PostUpdate, (position_translation))

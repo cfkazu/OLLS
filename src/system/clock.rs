@@ -8,7 +8,7 @@ pub fn time_management(
 ){
     for (entity,get_aturn) in get_aturn.iter(){
         if get_aturn.current_time == current_time.time{
-            println!("not removed yet time:{:?}",current_time.time);
+           // println!("not removed yet time:{:?}",current_time.time);
             return;
         }
     }
