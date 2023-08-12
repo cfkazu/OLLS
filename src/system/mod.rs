@@ -105,7 +105,7 @@ pub fn player_input(
         keyboard_input.reset(key);
 
         let mut next_time = current_time.clone();
-        next_time.time.minute += 5;
+        next_time.time.second += 5;
         next_time.time.resolve_time();
         turn_queue.queue.push(WantATurn {
              time: next_time.time, 

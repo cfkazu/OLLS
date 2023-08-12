@@ -213,9 +213,15 @@ pub struct MobStatus{
     pub base_damage: Option<i32>,
     pub hunger: Option<i32>,
     pub sleep: Option<i32>,
+    pub required_time: Option<i32>,
 }
 
 #[derive(Clone, Deserialize, Debug,Default,Resource)]
 pub struct MobStatusList{
     pub mob_status_list: HashMap<usize,MobStatus,Hasher>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Component,Copy,Deserialize)]
+pub struct RequiredTime{
+    pub time:i32
 }

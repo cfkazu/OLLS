@@ -1,7 +1,5 @@
 use crate::prelude::*;
 use serde::Deserialize;
-use std::collections::HashSet;
-use std::fmt::format;
 use std::fs::File;
 use ron::de::from_reader;
 mod mob_status;
@@ -18,6 +16,7 @@ pub struct SpawnTemplate {
     pub position: Option<Position>,
     pub hunger: Option<i32>,
     pub sleep: Option<i32>,
+    pub required_time:Option<i32>,
 } 
 
 
@@ -99,6 +98,11 @@ impl SpawnTemplates{
             if let Some(sleep) = mob_status.sleep{
                 entity.insert(SleepDesire{current:sleep,max:sleep});
             }
+            if let Some(required_time) = mob_status.required_time{
+                entity.insert(RequiredTime{time:required_time});
+            }else{
+                entity.insert(RequiredTime{time:15});
+            }
             if mob_status.mob_type != MobType::Item{
                 entity.insert(GetATurn{current_time:current_time.time.clone(),before_time:current_time.time.clone()});
             }
@@ -129,6 +133,11 @@ impl SpawnTemplates{
             }
             if let Some(sleep) = template.sleep{
                 entity.insert(SleepDesire{current:sleep,max:sleep});
+            }
+            if let Some(required_time) = template.required_time{
+                entity.insert(RequiredTime{time:required_time});
+            }else{
+                entity.insert(RequiredTime{time:15});
             }
             if template.mob_type != MobType::Item{
                 entity.insert(GetATurn{current_time:current_time.time.clone(),before_time:current_time.time.clone()});

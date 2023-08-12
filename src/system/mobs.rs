@@ -10,12 +10,12 @@ pub enum MobType{
 pub fn mobs_move_by_time(
     mut commands: Commands,
     mut map: ResMut<Map>,
-    mut mob_positions: Query<(Entity, &mut Position),(With<Mob>,With<GetATurn>)>,
+    mut mob_positions: Query<(Entity, &mut Position,&RequiredTime),(With<Mob>,With<GetATurn>)>,
     current_time: Res<CurrentTime>,
     mut turn_queue:ResMut<TurnQueue>,
 ){
     
-    for (entity,position) in mob_positions.iter_mut(){
+    for (entity,position,required_time) in mob_positions.iter_mut(){
         
         let mut rng = RandomNumberGenerator::new();
         let mut new_position = position.clone();
@@ -31,7 +31,7 @@ pub fn mobs_move_by_time(
         }
 
         let mut next_time = current_time.clone();
-        next_time.time.minute += 15;
+        next_time.time.second += required_time.time;
         next_time.time.resolve_time();
         turn_queue.queue.push(WantATurn {
              time: next_time.time, 
