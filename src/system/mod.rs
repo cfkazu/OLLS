@@ -87,7 +87,8 @@ pub fn player_input(
     let mut wait = false;
     let mut new_position = *pos;
     let key = keyboard_input.get_pressed().next().cloned();
-
+    let mut shoot = false;
+    
     if let Some(key) = key {
         match key {
             KeyCode::Left => new_position.x -= 1,
@@ -95,6 +96,7 @@ pub fn player_input(
             KeyCode::Up => new_position.y += 1,
             KeyCode::Down => new_position.y -= 1,
             KeyCode::Space => wait = true,
+            KeyCode::F => shoot = true,
             _ => action = false,
         }
 
@@ -115,10 +117,12 @@ pub fn player_input(
                     destination: new_position,
                 });
             }
-            next_state.set(TurnState::PlayerTurn);
+            next_state.set(TurnState::Timelapsing);
         }
         if wait {
-            next_state.set(TurnState::PlayerTurn);
+            next_state.set(TurnState::Timelapsing);
+        }else if shoot{
+
         }
 
         keyboard_input.reset(key);
@@ -168,7 +172,7 @@ impl Plugin for PlayerInputPlugin {
                     //equip_weapon_log
                 )
                     .chain()
-                    .run_if(in_state(TurnState::PlayerTurn)),
+                    .run_if(in_state(TurnState::Timelapsing)),
             );
 
         app.add_systems(
@@ -208,6 +212,12 @@ impl Plugin for TimePlugin {
                 .chain()
                 .run_if(not(in_state(TurnState::AwaitingInput))),
         );
-        app.add_systems(Update, (movement::try_move, camera::camera_move).chain());
+        app.add_systems(Update,
+             (movement::try_move,
+             camera::camera_move,
+             display_state).chain());
     }
+}
+pub fn display_state(state:Res<State<TurnState>>){
+    //println!("state: {:?}",state);
 }

@@ -263,3 +263,11 @@ pub struct ToDie{
     pub position:Position,
     pub death_reason:String,
 }
+
+#[derive(Clone,Component)]
+pub struct Bullet{
+    pub damage:i32,
+    pub transformed_transform:Transform,
+    pub target_transform:Transform,
+    pub angle:f32,
+}

@@ -62,6 +62,14 @@ fn setup(
         atlas: texture_atlas_handle.clone(),
     });
 
+    let texture_handle: Handle<Image> = asset_server.load("item.png");
+    let texture_atlas =
+        TextureAtlas::from_grid(texture_handle, Vec2::new(48.0, 48.0), 33, 25, None, None);
+    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+    commands.insert_resource(ItemAsset {
+        atlas: texture_atlas_handle.clone(),
+    });
+
     let mut cam = Camera2dBundle::default();
     cam.transform.scale = Vec3::new(0.5, 0.5, 1.0);
     commands.spawn((MainCamera, cam));

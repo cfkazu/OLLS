@@ -6,7 +6,7 @@ pub fn end_turn(
     let current_state: TurnState = turn_state.clone();
     let mut new_state = match *turn_state.get() {
         TurnState::AwaitingInput => return,
-        TurnState::PlayerTurn => TurnState::MonsterTurn,
+        TurnState::Timelapsing => TurnState::MonsterTurn,
         TurnState::MonsterTurn => TurnState::AwaitingInput,
         //TurnState::StartScreen => return,
         //TurnState::NextLevel => TurnState::AwaitingInput,

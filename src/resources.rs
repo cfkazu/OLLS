@@ -12,16 +12,20 @@ pub struct MobAsset {
 pub struct CharacterAsset {
     pub atlas: Handle<TextureAtlas>,
 }
-
+#[derive(Resource)]
+pub struct ItemAsset {
+    pub atlas: Handle<TextureAtlas>,
+}
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum TurnState {
     #[default]
     //StartScreen,
     AwaitingInput,
     //InMenus,
-    PlayerTurn,
+    Timelapsing,
     MonsterTurn,
     MoveTime,
+    BulletMoving,
     //GameOver,
     //Victory,
     //NextLevel,
