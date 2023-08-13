@@ -101,6 +101,9 @@ pub fn player_input(
             }
             next_state.set(TurnState::PlayerTurn);
         }
+        if wait{
+            next_state.set(TurnState::PlayerTurn);
+        }
 
         keyboard_input.reset(key);
 
