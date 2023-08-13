@@ -1865,12 +1865,19 @@ impl Map{
             spawn_templates:None,
         }
     }
-    pub fn can_enter_tile<T:Into<Position>>(&self,position: T)->bool{
+    pub fn can_enter_tile<T:Into<Position>>(&self,position: T,tile_status_list:&Res<TileStatusList>)->bool{
         let position = position.into();
-        self.in_bounds(position) 
-        //&& self.tiles[self.map_idx(position.x, position.y)] == TileType::Glass1 
-        && self.tiles[self.map_idx(position.x, position.y)] != TileType::Heat3
-        && self.occupation[self.map_idx(position.x, position.y)] == None
+        if self.in_bounds(position){
+            let tile = self.tiles[self.map_idx(position.x, position.y)];
+            let tile_status = tile_status_list.tile_status_list.get(&(tile as usize));
+            (if let Some(tile_status) = tile_status{
+                tile_status.can_pass
+            }else{
+                true
+            })&&self.occupation[self.map_idx(position.x, position.y)] == None
+        } else{
+            false
+        }
     }
 
     pub fn entity_occupy_tile(&mut self,entity:Entity,position:Position){

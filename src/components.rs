@@ -201,6 +201,16 @@ pub struct GetATurn{
     pub current_time: Time,
     pub before_time: Time,
 }
+#[derive(Clone, Deserialize, Debug,Default)]
+pub struct TileStatus{
+    pub name: String,
+    pub can_pass: bool,
+}
+#[derive(Clone, Deserialize, Debug,Default,Resource)]
+pub struct TileStatusList{
+    pub tile_status_list: HashMap<usize,TileStatus,Hasher>,
+}
+
 
 #[derive(Clone, Deserialize, Debug,Default)]
 pub struct MobStatus{
@@ -214,6 +224,8 @@ pub struct MobStatus{
     pub hunger: Option<i32>,
     pub sleep: Option<i32>,
     pub required_time: Option<i32>,
+    pub can_move:bool,
+    pub occupy_tile:Option<bool>,
 }
 
 #[derive(Clone, Deserialize, Debug,Default,Resource)]
@@ -224,4 +236,9 @@ pub struct MobStatusList{
 #[derive(Debug, Clone, PartialEq, Eq, Component,Copy,Deserialize)]
 pub struct RequiredTime{
     pub time:i32
+}
+#[derive(Debug, Clone, PartialEq, Eq, Component,Copy,Deserialize)]
+pub struct Plant{
+    pub growth:i32,
+    pub growth_rate:i32,
 }

@@ -106,6 +106,7 @@ fn main() {
         .add_plugins(AwaitingInputPlugin)
         .add_plugins(TimePlugin)
         .add_plugins(SpawnerPlugin)
+        .add_plugins(MapPlugin)
         //.add_systems(Update, movement::movement)
         .add_plugins(UIPlugin)
         .add_systems(PostUpdate, (position_translation))

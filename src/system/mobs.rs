@@ -5,7 +5,8 @@ pub enum MobType{
     #[default]Neutral,
     Hostile,
     Ally,
-    Item
+    Item,
+    Plant,
 }
 pub fn mobs_move_by_time(
     mut commands: Commands,
