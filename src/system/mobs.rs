@@ -160,11 +160,11 @@ pub fn enemies_move_by_time(
         (Entity, &mut Position, &RequiredTime, Option<&MoveType>),
         (With<Mob>, With<GetATurn>, With<Enemy>),
     >,
-    player_position: Query<&Position, (With<Player>, Without<Mob>)>,
+    player_position: Query<(Entity,&Position) ,(With<Player>, Without<Mob>)>,
     current_time: Res<CurrentTime>,
     mut turn_queue: ResMut<TurnQueue>,
 ) {
-    let player_position = player_position.single();
+    let (player_entity,player_position) = player_position.single();
     for (entity, position, required_time, move_type) in mob_positions.iter_mut() {
         let new_position: Position;
         if let Some(move_type) = move_type {
@@ -172,6 +172,12 @@ pub fn enemies_move_by_time(
             match id {
                 MoveStrategy::Chase => {
                     new_position = move_chase(&position, player_position);
+                    if new_position == *player_position{
+                        commands.spawn(WantsToAttack{
+                            attacker: entity,
+                            victim: player_entity
+                        });
+                    }
                 }
                 MoveStrategy::Random => {
                     new_position = move_random(&position);
