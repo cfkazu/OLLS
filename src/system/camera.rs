@@ -1,11 +1,11 @@
 use crate::prelude::*;
 
 pub fn camera_move(
-    primary_query:Query<&Window,With<PrimaryWindow>>,
+    primary_query: Query<&Window, With<PrimaryWindow>>,
     player_query: Query<&Position, (Changed<Position>, With<Player>)>,
     mut camera_query: Query<&mut Transform, (With<MainCamera>, Without<Player>)>,
-){
-    for player_position in player_query.iter(){
+) {
+    for player_position in player_query.iter() {
         if let Ok(window) = primary_query.get_single() {
             let mut camera_transform = camera_query.single_mut();
             // calculate new coordinates and update
