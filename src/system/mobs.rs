@@ -32,6 +32,31 @@ pub fn move_random(&pos: &Position) -> Position {
         _ => Position { x: pos.x, y: pos.y },
     }
 }
+pub fn move_chase(pos: &Position, target_pos: &Position) -> Position {
+    if target_pos.x > pos.x {
+        Position {
+            x: pos.x + 1,
+            y: pos.y,
+        }
+    } else if target_pos.x < pos.x {
+        Position {
+            x: pos.x - 1,
+            y: pos.y,
+        }
+    } else if target_pos.y > pos.y {
+        Position {
+            x: pos.x,
+            y: pos.y + 1,
+        }
+    } else if target_pos.y < pos.y {
+        Position {
+            x: pos.x,
+            y: pos.y - 1,
+        }
+    } else {
+        Position { x: pos.x, y: pos.y }
+    }
+}
 
 pub fn mobs_move_by_time(
     mut commands: Commands,
@@ -51,16 +76,7 @@ pub fn mobs_move_by_time(
             let id = move_type.move_id;
             match id {
                 MoveStrategy::Chase => {
-                    if player_position.y > position.y {
-                        new_position.y += 1;
-                    } else if player_position.y < position.y {
-                        new_position.y -= 1;
-                    }
-                    if player_position.x > position.x {
-                        new_position.x += 1;
-                    } else if player_position.x < position.x {
-                        new_position.x -= 1;
-                    }
+                    new_position = move_chase(&position, player_position);
                 }
                 MoveStrategy::Random => {
                     new_position = move_random(&position);
@@ -90,44 +106,7 @@ pub fn mobs_move_by_time(
         commands.entity(entity).remove::<GetATurn>();
     }
 }
-pub fn mobs_move(
-    mut commands: Commands,
-    mut map: ResMut<Map>,
-    mut mob_positions: Query<(Entity, &mut Position), With<Mob>>,
-) {
-    for (entity, position) in mob_positions.iter_mut() {
-        let mut rng = RandomNumberGenerator::new();
-        let mut new_position = position.clone();
-        new_position = match rng.range(0, 4) {
-            0 => Position {
-                x: new_position.x,
-                y: new_position.y + 1,
-            },
-            1 => Position {
-                x: new_position.x,
-                y: new_position.y - 1,
-            },
-            2 => Position {
-                x: new_position.x + 1,
-                y: new_position.y,
-            },
-            3 => Position {
-                x: new_position.x - 1,
-                y: new_position.y,
-            },
-            _ => Position {
-                x: new_position.x,
-                y: new_position.y,
-            },
-        };
-        if new_position != *position {
-            commands.spawn(WantsToMove {
-                entity: entity,
-                destination: new_position,
-            });
-        }
-    }
-}
+
 pub fn spawn_mobs(
     mut map: ResMut<Map>,
     mut commands: Commands,
