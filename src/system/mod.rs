@@ -75,14 +75,13 @@ pub fn player_input(
     mut commands: Commands,
     mut keyboard_input: ResMut<Input<KeyCode>>,
     mut player_postion: Query<(Entity, &mut Position, &mut Transform), With<Player>>,
-    mut map: ResMut<Map>,
     mobs: Query<(Entity, &Position), (With<Health>, Without<Player>)>,
     mut next_state: ResMut<NextState<TurnState>>,
     current_time: Res<CurrentTime>,
     mut turn_queue: ResMut<TurnQueue>,
 ) {
     // println!("current_time: {:?}",current_time.time);
-    let (player_entity, mut pos, mut transform) = player_postion.single_mut();
+    let (player_entity, pos, transform) = player_postion.single_mut();
     let mut action = true;
     let mut wait = false;
     let mut new_position = pos.clone();
@@ -181,7 +180,6 @@ impl Plugin for PlayerInputPlugin {
 pub struct MobPlugin;
 impl Plugin for MobPlugin {
     fn build(&self, app: &mut App) {
-
         app.add_systems(
             Update,
             (mobs::mobs_move_by_time,)

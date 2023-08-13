@@ -87,14 +87,6 @@ fn setup(
     commands.insert_resource(queue);
 }
 
-fn test(mut commands: Commands, atlas: Res<MapAsset>) {
-    for i in 0..SIDE_LENGTH as i32 {
-        for j in 0..SIDE_LENGTH as i32 {
-            create_tile(&mut commands, 2, Position::new(i, j), &atlas);
-        }
-    }
-}
-
 fn main() {
     App::new()
         .add_plugins(
@@ -126,6 +118,6 @@ fn main() {
         .add_plugins(MapPlugin)
         //.add_systems(Update, movement::movement)
         .add_plugins(UIPlugin)
-        .add_systems(PostUpdate, (position_translation))
+        .add_systems(PostUpdate, position_translation)
         .run();
 }

@@ -1,9 +1,7 @@
-use bevy::{transform::commands, window::WindowTheme};
-
 use crate::{prelude::*, GRID_NUM};
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
-use tiled::{FiniteTileLayer, FiniteTileLayerData, Loader, TileLayer};
+use tiled::Loader;
 #[derive(Copy, Clone, PartialEq, FromPrimitive)]
 #[repr(usize)]
 pub enum TileType {
