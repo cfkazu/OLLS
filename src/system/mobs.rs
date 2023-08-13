@@ -57,7 +57,152 @@ pub fn move_chase(pos: &Position, target_pos: &Position) -> Position {
         Position { x: pos.x, y: pos.y }
     }
 }
+pub fn neutrals_move_by_time(
+    mut commands: Commands,
+    map: Res<Map>,
+    mut mob_positions: Query<
+        (Entity, &mut Position, &RequiredTime, Option<&MoveType>),
+        (With<Mob>, With<GetATurn>, With<Neutral>),
+    >,
+    player_position: Query<&Position, (With<Player>, Without<Mob>)>,
+    current_time: Res<CurrentTime>,
+    mut turn_queue: ResMut<TurnQueue>,
+) {
+    let player_position = player_position.single();
+    for (entity, position, required_time, move_type) in mob_positions.iter_mut() {
+        let new_position: Position;
+        if let Some(move_type) = move_type {
+            let id = move_type.move_id;
+            match id {
+                MoveStrategy::Chase => {
+                    new_position = move_chase(&position, player_position);
+                }
+                MoveStrategy::Random => {
+                    new_position = move_random(&position);
+                }
+                _ => {
+                    todo!("Move type not implemented")
+                }
+            }
+        } else {
+            new_position = move_random(&position);
+        }
+        if new_position != *position {
+            commands.spawn(WantsToMove {
+                entity: entity,
+                destination: new_position,
+            });
+        }
+        let mut next_time = current_time.clone();
+        next_time.time.second += required_time.time;
+        next_time.time.resolve_time();
+        turn_queue.queue.push(WantATurn {
+            time: next_time.time,
+            character: entity,
+            before_time: current_time.time,
+        });
 
+        commands.entity(entity).remove::<GetATurn>();
+    }
+}
+pub fn allies_move_by_time(
+    mut commands: Commands,
+    map: Res<Map>,
+    mut mob_positions: Query<
+        (Entity, &mut Position, &RequiredTime, Option<&MoveType>),
+        (With<Mob>, With<GetATurn>, With<Ally>),
+    >,
+    player_position: Query<&Position, (With<Player>, Without<Mob>)>,
+    current_time: Res<CurrentTime>,
+    mut turn_queue: ResMut<TurnQueue>,
+) {
+    let player_position = player_position.single();
+    for (entity, position, required_time, move_type) in mob_positions.iter_mut() {
+        let new_position: Position;
+        if let Some(move_type) = move_type {
+            let id = move_type.move_id;
+            match id {
+                MoveStrategy::Chase => {
+                    new_position = move_chase(&position, player_position);
+                }
+                MoveStrategy::Random => {
+                    new_position = move_random(&position);
+                }
+                _ => {
+                    todo!("Move type not implemented")
+                }
+            }
+        } else {
+            new_position = move_random(&position);
+        }
+        if new_position != *position {
+            commands.spawn(WantsToMove {
+                entity: entity,
+                destination: new_position,
+            });
+        }
+        let mut next_time = current_time.clone();
+        next_time.time.second += required_time.time;
+        next_time.time.resolve_time();
+        turn_queue.queue.push(WantATurn {
+            time: next_time.time,
+            character: entity,
+            before_time: current_time.time,
+        });
+
+        commands.entity(entity).remove::<GetATurn>();
+    }
+}
+pub fn enemies_move_by_time(
+    mut commands: Commands,
+    map: Res<Map>,
+    mut mob_positions: Query<
+        (Entity, &mut Position, &RequiredTime, Option<&MoveType>),
+        (With<Mob>, With<GetATurn>, With<Enemy>),
+    >,
+    player_position: Query<&Position, (With<Player>, Without<Mob>)>,
+    current_time: Res<CurrentTime>,
+    mut turn_queue: ResMut<TurnQueue>,
+) {
+    let player_position = player_position.single();
+    for (entity, position, required_time, move_type) in mob_positions.iter_mut() {
+        let new_position: Position;
+        if let Some(move_type) = move_type {
+            let id = move_type.move_id;
+            match id {
+                MoveStrategy::Chase => {
+                    new_position = move_chase(&position, player_position);
+                }
+                MoveStrategy::Random => {
+                    new_position = move_random(&position);
+                }
+                _ => {
+                    todo!("Move type not implemented")
+                }
+            }
+        } else {
+            new_position = move_random(&position);
+        }
+        if new_position != *position {
+            commands.spawn(WantsToMove {
+                entity: entity,
+                destination: new_position,
+            });
+        }
+        let mut next_time = current_time.clone();
+        next_time.time.second += required_time.time;
+        next_time.time.resolve_time();
+        turn_queue.queue.push(WantATurn {
+            time: next_time.time,
+            character: entity,
+            before_time: current_time.time,
+        });
+
+        commands.entity(entity).remove::<GetATurn>();
+    }
+}
+
+/*
 pub fn mobs_move_by_time(
     mut commands: Commands,
     map: Res<Map>,
@@ -105,7 +250,7 @@ pub fn mobs_move_by_time(
 
         commands.entity(entity).remove::<GetATurn>();
     }
-}
+}*/
 
 pub fn spawn_mobs(
     mut map: ResMut<Map>,

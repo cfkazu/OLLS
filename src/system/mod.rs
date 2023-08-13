@@ -182,8 +182,13 @@ impl Plugin for MobPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            (mobs::mobs_move_by_time,)
-                .chain()
+            (
+                //mobs::mobs_move_by_time,
+                mobs::allies_move_by_time,
+                mobs::enemies_move_by_time,
+                mobs::neutrals_move_by_time,
+            )
+                //.chain()
                 .run_if(not(in_state(TurnState::AwaitingInput))),
         );
     }

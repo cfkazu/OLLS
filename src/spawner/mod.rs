@@ -142,6 +142,15 @@ impl SpawnTemplates {
                         growth_rate: additional_status[1],
                     });
                 }
+                MobType::Ally => {
+                    entity.insert(Ally);
+                }
+                MobType::Hostile => {
+                    entity.insert(Enemy);
+                }
+                MobType::Neutral => {
+                    entity.insert(Neutral);
+                }
                 _ => {}
             };
         } else {
@@ -196,6 +205,18 @@ impl SpawnTemplates {
                     before_time: current_time.time.clone(),
                 });
             }
+            match template.mob_type {
+                MobType::Ally => {
+                    entity.insert(Ally);
+                }
+                MobType::Hostile => {
+                    entity.insert(Enemy);
+                }
+                MobType::Neutral => {
+                    entity.insert(Neutral);
+                }
+                _ => {}
+            };
         }
 
         /*

@@ -11,6 +11,13 @@ use std::hash::BuildHasherDefault;
 pub struct MainCamera;
 #[derive(Component)]
 pub struct Player;
+#[derive(Component)]
+pub struct Enemy;
+#[derive(Component)]
+pub struct Neutral;
+#[derive(Component)]
+pub struct Ally;
+
 #[derive(Component, Clone, Copy)]
 pub struct MoveType {
     pub move_id: MoveStrategy,
