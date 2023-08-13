@@ -54,8 +54,8 @@ pub fn spawn_player(
                 y: player_start.y,
             },
             GetATurn {
-                current_time: current_time.time.clone(),
-                before_time: current_time.time.clone(),
+                current_time: current_time.time,
+                before_time: current_time.time,
             },
         ))
         .id();
@@ -84,7 +84,7 @@ pub fn player_input(
     let (player_entity, pos, transform) = player_postion.single_mut();
     let mut action = true;
     let mut wait = false;
-    let mut new_position = pos.clone();
+    let mut new_position = *pos;
     let key = keyboard_input.get_pressed().next().cloned();
 
     if let Some(key) = key {
@@ -128,7 +128,7 @@ pub fn player_input(
         turn_queue.queue.push(WantATurn {
             time: next_time.time,
             character: player_entity,
-            before_time: current_time.time.clone(),
+            before_time: current_time.time,
         })
     }
 }

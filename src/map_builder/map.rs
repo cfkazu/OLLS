@@ -1840,75 +1840,6 @@ impl Map {
             None
         }
     }
-    pub fn testmap() -> Self {
-        let my_tile: Vec<TileType> = vec![
-            TileType::GlassRock,
-            TileType::GlassRock,
-            TileType::GlassRock,
-            TileType::GlassRock,
-            TileType::GlassRock,
-            TileType::GlassRock,
-            TileType::Glass1,
-            TileType::Glass1,
-            TileType::Glass1,
-            TileType::GlassRock,
-            TileType::GlassRock,
-            TileType::Glass1,
-            TileType::Glass1,
-            TileType::Glass1,
-            TileType::GlassRock,
-            TileType::GlassRock,
-            TileType::Glass1,
-            TileType::Glass1,
-            TileType::Glass1,
-            TileType::GlassRock,
-            TileType::GlassRock,
-            TileType::GlassRock,
-            TileType::GlassRock,
-            TileType::GlassRock,
-            TileType::GlassRock,
-        ];
-        Self {
-            width: 5,
-            height: 5,
-            tiles: my_tile,
-            occupation: vec![None; 25],
-            player_start: Position::new(2, 1),
-            mob_starts: vec![
-                (
-                    Position::new(2, 3),
-                    Mob {
-                        mob_type: MobType::Neutral,
-                        index: 5,
-                    },
-                ),
-                (
-                    Position::new(3, 3),
-                    Mob {
-                        mob_type: MobType::Neutral,
-                        index: 6,
-                    },
-                ),
-                (
-                    Position::new(2, 2),
-                    Mob {
-                        mob_type: MobType::Neutral,
-                        index: 7,
-                    },
-                ),
-                (
-                    Position::new(3, 2),
-                    Mob {
-                        mob_type: MobType::Neutral,
-                        index: 8,
-                    },
-                ),
-            ],
-            //mob_positions:vec![Position::new(2,3),Position::new(3,3)],
-            file_name: String::from("test"),
-            spawn_templates: None,
-        }
-    }
     pub fn can_enter_tile<T: Into<Position>>(
         &self,
         position: T,
@@ -1973,8 +1904,8 @@ impl Map {
             let mut spawn_templates = None;
             if let Some(item_mob_layer) = item_mob_layer {
                 if let Some(item_mob_layer) = item_mob_layer.as_tile_layer() {
-                    for y in (0..layer.height().unwrap()) {
-                        for x in (0..layer.width().unwrap()) {
+                    for y in 0..layer.height().unwrap() {
+                        for x in 0..layer.width().unwrap() {
                             if let Some(t) = item_mob_layer.get_tile(x as i32, y as i32) {
                                 let id = t.id();
                                 //println!("my_tile:{:?}",id);

@@ -60,7 +60,7 @@ pub fn move_chase(pos: &Position, target_pos: &Position) -> Position {
 
 pub fn mobs_move_by_time(
     mut commands: Commands,
-    mut map: ResMut<Map>,
+    map: Res<Map>,
     mut mob_positions: Query<
         (Entity, &mut Position, &RequiredTime, Option<&MoveType>),
         (With<Mob>, With<GetATurn>),
@@ -71,7 +71,7 @@ pub fn mobs_move_by_time(
 ) {
     let player_position = player_position.single();
     for (entity, position, required_time, move_type) in mob_positions.iter_mut() {
-        let mut new_position = position.clone();
+        let new_position: Position;
         if let Some(move_type) = move_type {
             let id = move_type.move_id;
             match id {
@@ -100,7 +100,7 @@ pub fn mobs_move_by_time(
         turn_queue.queue.push(WantATurn {
             time: next_time.time,
             character: entity,
-            before_time: current_time.time.clone(),
+            before_time: current_time.time,
         });
 
         commands.entity(entity).remove::<GetATurn>();
@@ -133,8 +133,8 @@ pub fn spawn_mobs(
                     y: position.y,
                 },
                 GetATurn {
-                    current_time: current_time.time.clone(),
-                    before_time: current_time.time.clone(),
+                    current_time: current_time.time,
+                    before_time: current_time.time,
                 },
             ))
             .id();
