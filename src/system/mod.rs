@@ -6,6 +6,7 @@ mod end_turn;
 mod mobs;
 mod movement;
 mod time_lapse;
+mod to_die;
 pub use mobs::*;
 pub struct UserPlugin;
 
@@ -201,6 +202,7 @@ impl Plugin for TimePlugin {
             Update,
             (
                 clock::time_management,
+                to_die::die_despawn,
                 //time_lapse::time_lapse,
             )
                 .chain()

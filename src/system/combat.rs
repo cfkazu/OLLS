@@ -31,23 +31,28 @@ pub fn combat(
         if let Ok((mut hp, pos, name)) = health_query.get_mut(*victim) {
             hp.current -= final_damage;
             // add action to gamelog, first get name of attacker, then build message
-            let attacker_char = names_query.get(*attacker).unwrap();
+            let attacker_char = names_query.get(*attacker);
+            if attacker_char.is_err() {
+                return;
+            }
+            let attacker_char = attacker_char.unwrap();
             let message = format!(
-                "\n{} attacks {} ({} damage).",
-                attacker_char.0, name.0, final_damage
+                "\n{} attacks {} ({} damage). remains {} HP.",
+                attacker_char.0, name.0, final_damage,hp.current
             );
             gamelog.add_entry(message);
-            /*
+            
             // less than 1 HP remove it
             if hp.current < 1 {
-                if let Ok(_) = player.get(*victim) {
-
-                } else {
-                    map.free_occupy_tile(*pos);
-                    commands.entity(*victim).despawn();
-                }
+                commands.spawn(
+                    ToDie{
+                        entity:*victim,
+                        death_reason: format!("\n {} was murdered by {}.", name.0, attacker_char.0),
+                        position: *pos,
+                    }
+                );
             }
-            */
+            
         }
         commands.entity(*message).despawn();
     });

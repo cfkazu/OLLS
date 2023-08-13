@@ -257,3 +257,9 @@ pub struct Plant {
     pub growth: i32,
     pub growth_rate: i32,
 }
+#[derive(Clone,Component)]
+pub struct ToDie{
+    pub entity:Entity,
+    pub position:Position,
+    pub death_reason:String,
+}

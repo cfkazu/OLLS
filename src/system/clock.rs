@@ -5,7 +5,7 @@ pub fn time_management(
     mut current_time: ResMut<CurrentTime>,
     get_aturn: Query<(Entity, &GetATurn)>,
 ) {
-    for (entity, get_aturn) in get_aturn.iter() {
+    for (_, get_aturn) in get_aturn.iter() {
         if get_aturn.current_time == current_time.time {
             // println!("not removed yet time:{:?}",current_time.time);
             return;
@@ -15,10 +15,14 @@ pub fn time_management(
     let next = turn_queue.queue.pop();
     if let Some(next) = next {
         current_time.time = next.time;
-        commands.entity(next.character).insert(GetATurn {
-            current_time: current_time.time,
-            before_time: next.before_time,
-        });
+        let entity_candidate = commands.get_entity(next.character);
+        if let Some(mut entity) = entity_candidate {
+            entity.insert(GetATurn {
+                current_time: current_time.time,
+                before_time: next.before_time,
+            });
+        }
+
         loop {
             // println!("time:{:?}",current_time.time);
             let seek_next = turn_queue.queue.peek();
@@ -26,10 +30,13 @@ pub fn time_management(
                 if seek_next.time == current_time.time {
                     let next = turn_queue.queue.pop();
                     if let Some(next) = next {
-                        commands.entity(next.character).insert(GetATurn {
-                            current_time: current_time.time,
-                            before_time: next.before_time,
-                        });
+                        let entity_candidate = commands.get_entity(next.character);
+        if let Some(mut entity) = entity_candidate {
+            entity.insert(GetATurn {
+                current_time: current_time.time,
+                before_time: next.before_time,
+            });
+        }
                     } else {
                         break;
                     }
